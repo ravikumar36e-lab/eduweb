@@ -16,7 +16,6 @@ function renderSentence(){
   document.getElementById('snt-bar').style.width=`${(S.idx/total)*100}%`;
   document.getElementById('snt-prev').disabled=(S.idx===0);
   document.getElementById('snt-next').textContent=(S.idx>=total-1)?'Done ✅':'Next ➡';
-  say(q.t);
 }
 function sentNav(dir){
   if(dir===1){
