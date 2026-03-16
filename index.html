@@ -675,7 +675,9 @@ function startMath(levelIdx){
   renderMathQ();
   const icon=S.subject==='addition'?'➕':'➖';
   nav('scr-math-game',`${icon} Level ${levelIdx+1}`);
-  setTimeout(()=>document.getElementById('g-input').focus(),200);
+  // requestAnimationFrame ensures the screen is visible before focusing,
+  // which keeps the mobile keyboard open/triggered in a user-gesture context
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('g-input').focus()));
 }
 
 function renderMathQ(){
@@ -696,16 +698,34 @@ function checkMath(){
   if(inp.value===''||isNaN(val)){ inp.focus(); return; }
 
   const q=S.questions[S.idx];
+  const msg=document.getElementById('g-msg');
+  // disable input during feedback to prevent double-submit
+  inp.disabled=true;
+
   if(val===q.ans){
     S.score++;
     playSound('ok');
-    showFeedback(true,'');
-    setTimeout(()=>{ hideFeedback(); S.idx++; if(S.idx>=10) showScore(); else { renderMathQ(); inp.focus(); } },1400);
+    inp.className='answer-input';
+    msg.className='message correct';
+    msg.textContent=OK_MSGS[ri(0,OK_MSGS.length-1)];
+    spawnConfetti(12);
+    setTimeout(()=>{
+      inp.disabled=false;
+      S.idx++;
+      if(S.idx>=10) showScore();
+      else { renderMathQ(); inp.focus(); }
+    },900);
   } else {
     playSound('bad');
     inp.className='answer-input shake';
-    showFeedback(false,`${q.a} ${q.op} ${q.b} = ${q.ans}`);
-    setTimeout(()=>{ hideFeedback(); S.idx++; if(S.idx>=10) showScore(); else { renderMathQ(); inp.focus(); } },1900);
+    msg.className='message wrong';
+    msg.textContent=`❌ Answer: ${q.a} ${q.op} ${q.b} = ${q.ans}`;
+    setTimeout(()=>{
+      inp.disabled=false;
+      S.idx++;
+      if(S.idx>=10) showScore();
+      else { renderMathQ(); inp.focus(); }
+    },1400);
   }
 }
 
