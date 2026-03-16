@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>🌟 Learn &amp; Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+    body{
+      font-family:'Baloo 2','Comic Sans MS',cursive;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh; min-height:100dvh;
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+
+    /* ── HEADER ── */
+    header{
+      padding:12px 16px 6px; text-align:center; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+    header h1{
+      color:white; font-size:clamp(1.3em,5vw,2em); font-weight:800;
+      text-shadow:3px 3px 6px rgba(0,0,0,.3); letter-spacing:2px;
+    }
+    #back-btn{
+      background:rgba(255,255,255,.25); border:none; border-radius:50px;
+      padding:8px 16px; font-size:1.1em; font-family:inherit; color:white;
+      cursor:pointer; display:none; font-weight:700; transition:background .2s;
+    }
+    #back-btn:active{ background:rgba(255,255,255,.45); }
+
+    /* ── CONTENT ── */
+    .content{
+      flex:1; overflow-y:auto; padding:8px 14px 20px;
+      display:flex; flex-direction:column; align-items:center;
+    }
+
+    /* ── SCREENS ── */
+    .screen{ display:none; width:100%; max-width:480px; animation:slideIn .3s ease; }
+    .screen.active{ display:block; }
+    @keyframes slideIn{
+      from{ opacity:0; transform:translateY(18px); }
+      to  { opacity:1; transform:translateY(0); }
+    }
+
+    .card{
+      background:white; border-radius:28px;
+      padding:clamp(20px,5vw,36px) clamp(16px,4vw,30px);
+      text-align:center; box-shadow:0 14px 45px rgba(0,0,0,.22); margin-bottom:16px;
+    }
+    .card-title{
+      font-size:clamp(1.3em,4vw,1.7em); font-weight:800; color:#667eea; margin-bottom:14px;
+    }
+
+    /* ── MENU GRID ── */
+    .menu-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .menu-grid.single{ grid-template-columns:1fr; }
+    .menu-card{
+      background:white; border-radius:24px; padding:24px 12px;
+      display:flex; flex-direction:column; align-items:center;
+      cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,.18);
+      transition:transform .15s,box-shadow .15s; min-height:115px;
+      border:3px solid transparent;
+    }
+    .menu-card:active{ transform:scale(.94); box-shadow:0 4px 12px rgba(0,0,0,.18); }
+    .mc-icon { font-size:clamp(2.2em,9vw,3em); margin-bottom:8px; }
+    .mc-label{ font-size:clamp(.95em,3.5vw,1.2em); font-weight:800; color:#333; }
+    .mc-math { border-color:#FF6B6B; background:linear-gradient(135deg,#fff5f5,#ffe8e8); }
+    .mc-words{ border-color:#4ECDC4; background:linear-gradient(135deg,#f0fffe,#e0fffd); }
+    .mc-add  { border-color:#FFA552; background:linear-gradient(135deg,#fff8f0,#ffeedd); }
+    .mc-sub  { border-color:#9B59B6; background:linear-gradient(135deg,#f9f0ff,#eeddf5); }
+    .mc-lvl  { border-color:#27AE60; background:linear-gradient(135deg,#f0fff4,#ddfff0); }
+    .mc-fam  { border-color:#E67E22; background:linear-gradient(135deg,#fff8f0,#ffeacc); }
+
+    /* ── LEVEL GRID ── */
+    .level-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:8px; }
+    .level-card{
+      background:white; border-radius:18px; padding:18px 8px;
+      display:flex; flex-direction:column; align-items:center;
+      cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.14);
+      transition:transform .15s; text-align:center;
+    }
+    .level-card:active{ transform:scale(.92); }
+    .lc-num { font-size:clamp(1.8em,7vw,2.4em); font-weight:800; color:#333; }
+    .lc-desc{ font-size:.72em; color:#666; margin-top:4px; white-space:pre-line; }
+    .lc1{ border:3px solid #4CAF50; } .lc2{ border:3px solid #FF9800; }
+    .lc3{ border:3px solid #F44336; } .lc4{ border:3px solid #9C27B0; }
+    .lc5{ border:3px solid #2196F3; }
+
+    /* ── WORD FAMILY LIST ── */
+    .family-category{
+      font-size:clamp(.9em,3.5vw,1.1em); font-weight:800; color:#764ba2;
+      margin:14px 0 8px; text-align:left; padding-left:4px;
+    }
+    .family-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px; }
+    .family-chip{
+      background:white; border:2px solid #667eea; border-radius:50px;
+      padding:8px 16px; font-size:clamp(.9em,3vw,1.1em); font-weight:800;
+      color:#667eea; cursor:pointer; transition:all .15s;
+    }
+    .family-chip:active{ background:#667eea; color:white; transform:scale(.94); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap{
+      display:flex; align-items:center; gap:10px; margin-bottom:14px;
+    }
+    .progress-bar-bg{
+      flex:1; height:14px; background:rgba(255,255,255,.35);
+      border-radius:8px; overflow:hidden;
+    }
+    .progress-bar-fill{
+      height:100%; background:#FFD700; border-radius:8px; transition:width .35s ease;
+    }
+    .progress-label{ color:white; font-weight:800; font-size:.95em; white-space:nowrap; }
+
+    /* ── MATH GAME ── */
+    .problem{
+      font-size:clamp(2.8em,11vw,4.5em); font-weight:800; color:#333;
+      margin-bottom:14px; line-height:1.25;
+    }
+    .message-area{
+      min-height:54px; display:flex; align-items:center; justify-content:center;
+      margin-bottom:12px;
+    }
+    .message{ font-size:clamp(1.4em,5vw,2em); font-weight:800; }
+    .message.correct{ color:#2ecc71; animation:pop .4s ease; }
+    .message.wrong  { color:#e74c3c; }
+    @keyframes pop{
+      0%  { transform:scale(.7); }
+      60% { transform:scale(1.18); }
+      100%{ transform:scale(1); }
+    }
+    .answer-row{
+      display:flex; gap:12px; align-items:center; justify-content:center;
+    }
+    .answer-input{
+      width:130px; height:68px;
+      font-size:clamp(2em,7vw,2.5em); font-family:inherit; font-weight:800;
+      text-align:center; border:4px solid #667eea; border-radius:18px;
+      color:#333; background:#f8f9ff; outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .answer-input:focus{ border-color:#764ba2; box-shadow:0 0 0 4px rgba(118,75,162,.25); }
+    .answer-input.shake{ animation:shakeIt .4s ease; }
+    @keyframes shakeIt{
+      0%,100%{ transform:translateX(0); }
+      20%{ transform:translateX(-8px); }
+      40%{ transform:translateX(8px); }
+      60%{ transform:translateX(-6px); }
+      80%{ transform:translateX(6px); }
+    }
+    .btn-ok{
+      height:68px; padding:0 22px;
+      font-size:clamp(1.3em,4vw,1.7em); font-family:inherit; font-weight:800;
+      background:linear-gradient(135deg,#43e97b,#38f9d7); color:white;
+      border:none; border-radius:18px; cursor:pointer;
+      box-shadow:0 6px 20px rgba(67,233,123,.45);
+      transition:transform .15s,box-shadow .15s;
+    }
+    .btn-ok:active{ transform:scale(.93); }
+
+    /* ── WORD VIEW ── */
+    .word-letters{
+      display:flex; justify-content:center;
+      gap:clamp(5px,1.8vw,10px); margin-bottom:12px; flex-wrap:wrap;
+    }
+    .letter-box{
+      width:clamp(40px,12vw,62px); height:clamp(50px,14vw,72px);
+      display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#667eea,#764ba2); color:white;
+      font-size:clamp(1.5em,5.5vw,2.5em); font-weight:800;
+      border-radius:12px; box-shadow:0 4px 12px rgba(102,126,234,.4);
+      animation:popIn .3s ease backwards;
+    }
+    @keyframes popIn{
+      from{ transform:scale(0); opacity:0; }
+      to  { transform:scale(1); opacity:1; }
+    }
+    .word-family-badge{
+      display:inline-block; background:linear-gradient(135deg,#f093fb,#f5576c);
+      color:white; border-radius:50px; padding:4px 18px;
+      font-size:clamp(.9em,3vw,1.1em); font-weight:800; margin-bottom:12px;
+    }
+    .word-counter{ font-size:1em; color:#999; font-weight:600; margin-bottom:6px; }
+    .word-label  { font-size:.85em; color:#bbb; margin-bottom:14px; }
+    .btn-speak{
+      background:linear-gradient(135deg,#667eea,#764ba2); color:white;
+      border:none; border-radius:50px; padding:12px 28px;
+      font-size:clamp(1em,3.5vw,1.25em); font-family:inherit; font-weight:800;
+      cursor:pointer; box-shadow:0 6px 18px rgba(102,126,234,.4);
+      margin-bottom:18px; transition:transform .15s;
+    }
+    .btn-speak:active{ transform:scale(.93); }
+    .word-nav{ display:flex; gap:12px; }
+    .btn-nav{
+      flex:1; padding:18px 10px; font-size:clamp(1.1em,4vw,1.5em);
+      font-family:inherit; font-weight:800; border:none; border-radius:18px;
+      cursor:pointer; transition:transform .15s;
+    }
+    .btn-nav:active{ transform:scale(.93); }
+    .btn-nav:disabled{ opacity:.35; cursor:not-allowed; transform:none !important; }
+    .btn-prev{ background:linear-gradient(135deg,#f093fb,#f5576c); color:white; box-shadow:0 6px 18px rgba(245,87,108,.35); }
+    .btn-next{ background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; box-shadow:0 6px 18px rgba(79,172,254,.35); }
+
+    /* ── SCORE ── */
+    .score-big  { font-size:clamp(3.5em,14vw,5.5em); font-weight:800; color:#667eea; margin:12px 0; }
+    .score-stars{ font-size:clamp(2em,8vw,3em); margin:8px 0; }
+    .score-msg  { font-size:clamp(1em,3.5vw,1.3em); color:#555; margin:10px 0 20px; }
+    .score-title{ font-size:clamp(1.5em,5vw,2em); font-weight:800; color:#333; margin-bottom:8px; }
+    .btn-primary{
+      display:block; width:100%; padding:18px;
+      font-size:clamp(1.2em,4vw,1.6em); font-family:inherit; font-weight:800;
+      background:linear-gradient(135deg,#667eea,#764ba2); color:white;
+      border:none; border-radius:18px; cursor:pointer; margin-bottom:12px;
+      box-shadow:0 8px 22px rgba(102,126,234,.42); transition:transform .15s;
+    }
+    .btn-primary:active{ transform:scale(.95); }
+    .btn-secondary{
+      display:block; width:100%; padding:15px;
+      font-size:clamp(1.1em,3.5vw,1.4em); font-family:inherit; font-weight:800;
+      background:linear-gradient(135deg,#FF6B6B,#FF4E50); color:white;
+      border:none; border-radius:18px; cursor:pointer; margin-bottom:12px;
+      box-shadow:0 6px 16px rgba(255,78,80,.35); transition:transform .15s;
+    }
+    .btn-secondary:active{ transform:scale(.95); }
+    .btn-ghost{
+      display:block; width:100%; padding:13px;
+      font-size:clamp(1em,3vw,1.2em); font-family:inherit; font-weight:700;
+      background:rgba(255,255,255,.2); color:white;
+      border:2px solid rgba(255,255,255,.5); border-radius:18px; cursor:pointer;
+      margin-top:4px; transition:background .2s;
+    }
+    .btn-ghost:active{ background:rgba(255,255,255,.35); }
+
+    /* ── FEEDBACK OVERLAY ── */
+    #feedback-overlay{
+      position:fixed; inset:0; z-index:200;
+      display:none; flex-direction:column; align-items:center; justify-content:center;
+      animation:feedIn .28s ease;
+    }
+    #feedback-overlay.show{ display:flex; }
+    #feedback-overlay.ok { background:rgba(46,204,113,.9); }
+    #feedback-overlay.bad{ background:rgba(231,76,60,.9); }
+    @keyframes feedIn{
+      from{ opacity:0; transform:scale(.85); }
+      to  { opacity:1; transform:scale(1); }
+    }
+    .fb-emoji{ font-size:clamp(5em,18vw,8em); animation:bounce .5s ease infinite alternate; }
+    .fb-msg  { font-size:clamp(2em,7vw,3em); color:white; font-weight:800; text-align:center; text-shadow:2px 2px 4px rgba(0,0,0,.2); }
+    .fb-sub  { font-size:clamp(1em,3.5vw,1.4em); color:rgba(255,255,255,.9); margin-top:8px; text-align:center; }
+    @keyframes bounce{
+      from{ transform:translateY(0); }
+      to  { transform:translateY(-18px); }
+    }
+
+    /* ── CONFETTI ── */
+    #celebration{ position:fixed; inset:0; pointer-events:none; z-index:999; display:none; }
+    .confetti{
+      position:absolute; top:-40px;
+      animation:confettiFall linear forwards; border-radius:3px;
+    }
+    @keyframes confettiFall{
+      0%  { opacity:1; transform:translateY(0) rotate(0deg); }
+      100%{ opacity:.3; transform:translateY(110vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <button id="back-btn" onclick="goBack()">← Back</button>
+  <h1 id="page-title">🌟 Learn &amp; Play 🌟</h1>
+</header>
+
+<div class="content" id="main-content">
+
+  <!-- ══ HOME ══ -->
+  <div class="screen active" id="scr-home">
+    <div class="menu-grid">
+      <div class="menu-card mc-math" onclick="nav('scr-math-menu','🔢 Math')">
+        <div class="mc-icon">🔢</div><div class="mc-label">Math</div>
+      </div>
+      <div class="menu-card mc-words" onclick="nav('scr-words-menu','📖 Words')">
+        <div class="mc-icon">📖</div><div class="mc-label">Words</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MATH MENU ══ -->
+  <div class="screen" id="scr-math-menu">
+    <div class="menu-grid">
+      <div class="menu-card mc-add" onclick="openLevels('addition')">
+        <div class="mc-icon">➕</div><div class="mc-label">Addition</div>
+      </div>
+      <div class="menu-card mc-sub" onclick="openLevels('subtraction')">
+        <div class="mc-icon">➖</div><div class="mc-label">Subtraction</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MATH LEVEL SELECT ══ -->
+  <div class="screen" id="scr-levels">
+    <div class="card">
+      <div class="card-title" id="levels-title">Choose Level</div>
+      <div class="level-grid" id="levels-grid"></div>
+    </div>
+  </div>
+
+  <!-- ══ MATH GAME ══ -->
+  <div class="screen" id="scr-math-game">
+    <div class="progress-wrap">
+      <div class="progress-label" id="g-progress">1/10</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="g-bar" style="width:0%"></div></div>
+      <div class="progress-label" id="g-score">⭐ 0</div>
+    </div>
+    <div class="card">
+      <div class="problem" id="g-problem"></div>
+      <div class="message-area"><div class="message" id="g-msg"></div></div>
+      <div class="answer-row">
+        <input type="number" class="answer-input" id="g-input"
+               placeholder="?" inputmode="numeric" min="0" max="9999" autocomplete="off" />
+        <button class="btn-ok" onclick="checkMath()">✅ OK!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WORDS MENU ══ -->
+  <div class="screen" id="scr-words-menu">
+    <div class="menu-grid">
+      <div class="menu-card mc-lvl" onclick="nav('scr-word-levels','📖 Words by Level')">
+        <div class="mc-icon">📚</div><div class="mc-label">By Level</div>
+      </div>
+      <div class="menu-card mc-fam" onclick="nav('scr-family-list','🔤 Word Families')">
+        <div class="mc-icon">🔤</div><div class="mc-label">Word Families</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WORD LEVEL SELECT ══ -->
+  <div class="screen" id="scr-word-levels">
+    <div class="card">
+      <div class="card-title">Choose Level</div>
+      <div class="level-grid" id="word-levels-grid"></div>
+    </div>
+  </div>
+
+  <!-- ══ WORD FAMILY LIST ══ -->
+  <div class="screen" id="scr-family-list">
+    <div class="card" id="family-list-card" style="text-align:left;"></div>
+  </div>
+
+  <!-- ══ WORD VIEW ══ -->
+  <div class="screen" id="scr-word-view">
+    <div class="progress-wrap">
+      <div class="progress-label" id="w-progress">1/10</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="w-bar" style="width:0%"></div></div>
+      <div class="progress-label" id="w-level-label">Level 1</div>
+    </div>
+    <div class="card">
+      <div class="word-family-badge" id="w-badge" style="display:none;"></div>
+      <div class="word-letters" id="w-letters"></div>
+      <div class="word-counter" id="w-counter">Word 1 of 10</div>
+      <div class="word-label"   id="w-label"></div>
+      <button class="btn-speak" onclick="speakWord()">🔊 Say it!</button>
+      <div class="word-nav">
+        <button class="btn-nav btn-prev" id="btn-prev" onclick="wordNav(-1)">⬅ Prev</button>
+        <button class="btn-nav btn-next" id="btn-next" onclick="wordNav(1)">Next ➡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCORE ══ -->
+  <div class="screen" id="scr-score">
+    <div class="card">
+      <div class="score-title" id="sc-title">🏆 Level Complete!</div>
+      <div class="score-stars" id="sc-stars">⭐⭐⭐</div>
+      <div class="score-big"   id="sc-big">8/10</div>
+      <div class="score-msg"   id="sc-msg">Great job!</div>
+    </div>
+    <button class="btn-primary"   id="sc-next" onclick="goNextLevel()">Next Level ➡</button>
+    <button class="btn-secondary"             onclick="retryLevel()">🔄 Try Again</button>
+    <button class="btn-ghost"                 onclick="nav('scr-home','🌟 Learn &amp; Play 🌟')">🏠 Home</button>
+  </div>
+
+</div><!-- /content -->
+
+<!-- Overlays -->
+<div id="feedback-overlay">
+  <div class="fb-emoji" id="fb-emoji">🎉</div>
+  <div class="fb-msg"   id="fb-msg">Hooray!</div>
+  <div class="fb-sub"   id="fb-sub"></div>
+</div>
+<div id="celebration"></div>
+
+<script>
+/* ════════════════════════════════════════════════
+   WORD LEVELS  (no emojis – just words)
+════════════════════════════════════════════════ */
+const WORD_LEVELS = [
+  { label:'3-letter words', hint:'3-letter word',
+    words:['ant','bag','bat','bee','bus','cat','cow','cup','dog','ear',
+           'egg','eye','fan','fox','hat','hen','hug','jam','jar','key',
+           'leg','log','map','net','owl','pen','pig','pot','rat','red',
+           'rug','sun','tap','tea','tin','web','zip','zoo','fly','sky',
+           'mud','sad','joy','top','bed','bug','gum','run','dig','hop'] },
+  { label:'4-letter words', hint:'4-letter word',
+    words:['bear','bird','book','cake','corn','crab','door','drum','duck',
+           'face','farm','fire','fish','flag','frog','game','gold','hand',
+           'hero','home','jump','king','kite','lake','lamb','leaf','lion',
+           'lock','love','milk','moon','nest','pink','play','rain','ring',
+           'rose','sand','ship','snow','song','star','road','sail','read',
+           'luck','hill','hook','gate','draw'] },
+  { label:'5-letter words', hint:'5-letter word',
+    words:['brain','bread','brave','clean','dance','dream','eagle','feast',
+           'field','flame','glass','grade','grain','laugh','peace','peach',
+           'reach','scale','shake','share','sleep','smart','smile','smoke',
+           'snake','speak','stone','sweet','teach','think','train','treat',
+           'twice','watch','whale','wheat','whole','write','young','chair',
+           'cloud','crowd','crown','dress','drink','drive','ghost','giant',
+           'plant','plate'] },
+  { label:'6+ letter words', hint:'longer word',
+    words:['animal','button','candle','castle','circle','flower','forest',
+           'garden','hammer','jacket','jungle','kitten','ladder','monkey',
+           'orange','parrot','pencil','planet','rabbit','ribbon','rocket',
+           'school','silver','spider','spring','summer','sunset','tennis',
+           'ticket','turtle','valley','walnut','window','winter','yellow',
+           'zipper','cotton','doctor','dragon','finger','insect','mirror',
+           'mother','napkin','needle','potato','purple','sailor','statue','purple'] }
+];
+
+/* ════════════════════════════════════════════════
+   WORD FAMILIES  (from phonics PDF)
+════════════════════════════════════════════════ */
+const WORD_FAMILIES = {
+  'Short -a': {
+    '-ab':['cab','lab','dab','gab','jab','nab','tab'],
+    '-ad':['bad','dad','had','lad','mad','pad','sad','tad'],
+    '-ag':['bag','gag','lag','nag','rag','wag','hag','sag'],
+    '-am':['dam','jam','ram','yam','ham','bam','cam'],
+    '-an':['can','fan','man','pan','ran','van','tan','ban'],
+    '-ap':['cap','lap','map','nap','rap','tap','yap','gap'],
+    '-at':['bat','cat','fat','hat','mat','rat','sat','pat']
+  },
+  'Short -e': {
+    '-en':['den','hen','men','pen','ten','fen'],
+    '-et':['bet','get','jet','let','met','net','pet','set'],
+    '-ed':['bed','led','red','wed','fed','ted'],
+    '-eg':['beg','leg','peg','keg','veg']
+  },
+  'Short -i': {
+    '-ib':['bib','fib','nib','rib'],
+    '-id':['bid','did','hid','kid','lid','rid','mid'],
+    '-ig':['big','dig','fig','jig','wig','pig','rig','zig'],
+    '-im':['dim','him','rim','skim','trim','slim'],
+    '-in':['bin','din','pin','tin','win','fin','kin','gin'],
+    '-ip':['dip','hip','lip','nip','zip','sip','tip','rip'],
+    '-it':['bit','fit','hit','kit','lit','sit','nit','pit']
+  },
+  'Short -o': {
+    '-ob':['bob','cob','job','mob','rob','sob','gob'],
+    '-od':['cod','nod','pod','rod','sod','god'],
+    '-og':['bog','cog','dog','fog','hog','jog','log'],
+    '-op':['cop','hop','lop','mop','pop','top','stop','shop'],
+    '-ot':['cot','dot','hot','lot','pot','rot','tot','got'],
+    '-ox':['box','fox','pox']
+  },
+  'Short -u': {
+    '-ub':['cub','dub','hub','rub','tub','sub'],
+    '-ud':['bud','mud','dud','spud'],
+    '-ug':['bug','hug','jug','lug','mug','rug','tug'],
+    '-um':['gum','hum','sum','bum','drum'],
+    '-un':['bun','fun','gun','sun','nun','run','pun'],
+    '-ut':['but','cut','hut','nut','gut','rut']
+  },
+  'Ending Blends': {
+    '-nd':['and','end','band','hand','land','sand','find','kind','mind','wind','pond','bond'],
+    '-nk':['bank','rank','tank','sank','pink','rink','sink','wink','link','bonk','honk','junk','bunk'],
+    '-ng':['bang','gang','hang','sang','ring','king','sing','wing','song','long','rung','lung'],
+    '-mp':['camp','damp','lamp','ramp','bump','dump','hump','jump','pump'],
+    '-st':['best','last','past','test','nest','rest','vest','fist','list','dust','must','rust']
+  },
+  'Double Letters': {
+    '-ff':['riff','muff','cuff','huff','puff'],
+    '-ll':['wall','ball','tall','call','fall','fill','pull','bell','well','tell'],
+    '-ss':['mass','fuss','mess','boss','hiss','kiss','pass','miss','less','loss'],
+    '-zz':['buzz','jazz','fizz']
+  },
+  'L-Blends': {
+    'bl-':['blue','blob','blow','blew','blur','bled','blend','black','blade','blame','blank','blast'],
+    'cl-':['clap','clue','clay','clip','club','claw','clam','clack','class','clean','clear','click'],
+    'fl-':['flag','flap','flat','flee','flip','flop','flew','flock','flame','flash','flair'],
+    'gl-':['glad','glob','glow','glue','glee','glass','glide','gloom','glory'],
+    'pl-':['play','plow','plan','plus','plug','plum','plop','plant','plate','plain','plane'],
+    'sl-':['slam','slap','sled','slid','slim','slip','slot','slow','slime','sleep','slide','slope']
+  },
+  'R-Blends': {
+    'br-':['brag','brat','bran','brew','brim','brick','bread','break','brave','brain','brand'],
+    'cr-':['crab','crew','crop','crow','cram','crack','crisp','cross','crowd','crown','cream','creek'],
+    'dr-':['drip','drag','drop','draw','drum','dress','drink','drive','dream','drift'],
+    'fr-':['free','frog','from','fresh','fried','front','frost','fruit','frame','frank'],
+    'gr-':['grab','grid','grew','gram','grow','greed','green','grind','great','grade','grain','grant'],
+    'tr-':['trip','true','tree','trim','trap','track','truck','trail','train','trace','treat','tribe'],
+    'pr-':['prey','prim','prod','press','pride','prime','print','prize','proud','prune']
+  },
+  'S-Blends': {
+    'sc-':['scan','scam','scum','scab','scar','scale','scare','scene','scope'],
+    'sk-':['skin','skip','skim','skit','skill','skunk','skirt'],
+    'sm-':['smog','smug','small','smart','smell','smile','smoke','smash'],
+    'sn-':['snow','snap','snug','snip','snob','snore','sneak','snail'],
+    'sp-':['spin','spit','spot','spun','spam','speak','spell','spend','spine','spoke','spoon'],
+    'st-':['star','stay','stem','stop','stir','stud','stand','store','steam','stone','steep','steal'],
+    'sw-':['swan','swap','swim','sway','sweet','swing','swear','sweat','swell']
+  },
+  'Digraphs': {
+    'ch-':['chin','chip','chat','chew','chop','chair','chain','chest','check','chess','child','cheap'],
+    'sh-':['ship','shed','shoe','shop','shelf','shell','shift','short','sharp','shake','share','shore'],
+    'th-':['this','that','thin','thud','than','them','then','thick','think','three','thumb','throat'],
+    'wh-':['what','when','whip','wheel','whale','where','which','white','while','whole']
+  },
+  'R-Controlled': {
+    '-ar':['car','arm','art','cart','dart','barn','bark','yard','scar','star','hard','farm','park'],
+    '-or':['corn','born','fork','horn','form','torn','sort','cord','pork','port','storm','short'],
+    '-ir':['sir','dirt','bird','firm','girl','stir','third','shirt','first','swirl'],
+    '-er':['her','term','germ','fern','tiger','water','after','cover','never','over'],
+    '-ur':['fur','blur','curl','curb','burn','turn','hurt','burp','surf','purse','nurse']
+  },
+  'Long Vowels': {
+    '-ay':['day','say','way','hay','pay','bay','may','lay','ray','play','stay','away','clay','pray'],
+    '-ea':['eat','pea','sea','tea','beak','beam','beat','deal','heat','leaf','read','team','meal','real'],
+    '-ee':['see','bee','feed','meet','feet','free','beef','need','keep','peel','tree','green','sleep','sweep'],
+    '-oa':['oat','oak','boat','coal','coat','road','soap','foam','goal','soak','loan','load','groan'],
+    '-ow':['bow','row','low','own','tow','blow','slow','crow','flow','glow','grow','show','snow','know']
+  },
+  'Magic -e': {
+    'a_e':['cake','game','rate','made','page','cage','cave','cane','lake','lane','tape','brave','flame','grade','shake','plate'],
+    'i_e':['kite','dime','life','line','bike','ride','time','hide','dive','fine','pine','smile','write','pride','white','spine'],
+    'o_e':['bone','hope','code','vote','rose','nose','rope','hole','note','cone','stone','smoke','drove','whole','those'],
+    'u_e':['cube','huge','rule','tube','cute','tune','rude','mule','dude','pure','cure','fuse']
+  },
+  'Diphthongs': {
+    '-oi':['coin','join','boil','coil','soil','oil','foil','toil','point','noise','moist'],
+    '-oy':['boy','joy','coy','toy','ploy','soy','enjoy','royal','annoy','loyal'],
+    '-ou':['out','loud','pout','cloud','pound','sound','round','scout','shout','mouth','count'],
+    '-ow':['cow','bow','how','now','plow','vow','wow','owl','crowd','clown','gown','town','frown']
+  },
+  'Glued Sounds': {
+    '-ang':['bang','rang','sang','hang','gang','fang','clang','sprang'],
+    '-ing':['ring','king','sing','wing','ding','ping','bring','spring','sting','swing','thing','string'],
+    '-ong':['song','long','gong','tong','strong','prong','along','belong'],
+    '-ung':['rung','lung','sung','hung','young','stung','swung','clung','flung'],
+    '-ank':['bank','rank','tank','yank','sank','blank','plank','thank','spank','drank','frank'],
+    '-ink':['pink','rink','sink','wink','link','think','drink','brink','stink','shrink','blink'],
+    '-onk':['bonk','honk','monk','conk'],
+    '-unk':['funk','junk','sunk','dunk','bunk','trunk','chunk','skunk','stunk','drunk']
+  }
+};
+
+/* ════════════════════════════════════════════════
+   MATH LEVELS
+════════════════════════════════════════════════ */
+function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+const MATH_LEVELS = {
+  addition:[
+    { desc:'Single digit\n1 – 9',
+      gen(){ const a=ri(1,8),b=ri(1,9-a); return {a,b,op:'+',ans:a+b}; } },
+    { desc:'2-digit\nno carry',
+      gen(){
+        let a,b;
+        do{ a=ri(11,49); b=ri(11,49); }
+        while((a%10)+(b%10)>=10 || Math.floor(a/10)+Math.floor(b/10)>=10);
+        return {a,b,op:'+',ans:a+b};
+      }},
+    { desc:'2-digit\nwith carry',
+      gen(){
+        let a,b;
+        do{ a=ri(15,79); b=ri(15,79); }
+        while((a%10)+(b%10)<10 || a+b>99);
+        return {a,b,op:'+',ans:a+b};
+      }},
+    { desc:'3-digit\naddition',
+      gen(){ const a=ri(100,499),b=ri(100,499); return {a,b,op:'+',ans:a+b}; } },
+    { desc:'Mixed\nchallenge',
+      gen(){ const a=ri(50,999),b=ri(50,500); return {a,b,op:'+',ans:a+b}; } }
+  ],
+  subtraction:[
+    { desc:'Single digit\n1 – 9',
+      gen(){ const b=ri(1,7),a=ri(b+1,9); return {a,b,op:'−',ans:a-b}; } },
+    { desc:'2-digit\nno borrow',
+      gen(){
+        let a,b;
+        do{ a=ri(21,99); b=ri(10,a-10); }
+        while((a%10)<(b%10) || Math.floor(a/10)<=Math.floor(b/10));
+        return {a,b,op:'−',ans:a-b};
+      }},
+    { desc:'2-digit\nwith borrow',
+      gen(){
+        let a,b;
+        do{ a=ri(21,99); b=ri(12,a-1); }
+        while((a%10)>=(b%10));
+        return {a,b,op:'−',ans:a-b};
+      }},
+    { desc:'3-digit\nsubtraction',
+      gen(){ const b=ri(100,399),a=ri(b+50,900); return {a,b,op:'−',ans:a-b}; } },
+    { desc:'Mixed\nchallenge',
+      gen(){ const b=ri(50,499),a=ri(b+1,999); return {a,b,op:'−',ans:a-b}; } }
+  ]
+};
+
+/* ════════════════════════════════════════════════
+   APP STATE
+════════════════════════════════════════════════ */
+const S = {
+  subject:null,   // 'addition'|'subtraction'|'words'|'family'
+  level:0,
+  questions:[],
+  idx:0,
+  score:0,
+  familyKey:null, // current family name e.g. '-at'
+  navStack:[]
+};
+
+/* ════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════ */
+function nav(scrId, title, pushBack=true){
+  const cur=document.querySelector('.screen.active');
+  if(pushBack && cur)
+    S.navStack.push({scr:cur.id, title:document.getElementById('page-title').innerHTML});
+
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(scrId).classList.add('active');
+  document.getElementById('page-title').innerHTML=title;
+  document.getElementById('back-btn').style.display=(S.navStack.length>0)?'block':'none';
+  document.getElementById('main-content').scrollTop=0;
+}
+
+function goBack(){
+  if(!S.navStack.length) return;
+  const prev=S.navStack.pop();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(prev.scr).classList.add('active');
+  document.getElementById('page-title').innerHTML=prev.title;
+  document.getElementById('back-btn').style.display=(S.navStack.length>0)?'block':'none';
+}
+
+/* ════════════════════════════════════════════════
+   MATH
+════════════════════════════════════════════════ */
+function openLevels(subject){
+  S.subject=subject;
+  const icon=subject==='addition'?'➕':'➖';
+  const name=subject==='addition'?'Addition':'Subtraction';
+  document.getElementById('levels-title').textContent=`${icon} ${name} – Pick Level`;
+
+  const grid=document.getElementById('levels-grid');
+  grid.innerHTML='';
+  MATH_LEVELS[subject].forEach((lvl,i)=>{
+    const d=document.createElement('div');
+    d.className=`level-card lc${i+1}`;
+    d.innerHTML=`<div class="lc-num">L${i+1}</div><div class="lc-desc">${lvl.desc}</div>`;
+    d.onclick=()=>startMath(i);
+    grid.appendChild(d);
+  });
+  nav('scr-levels',`${icon} ${name}`);
+}
+
+function startMath(levelIdx){
+  S.level=levelIdx; S.idx=0; S.score=0;
+  S.questions=Array.from({length:10},()=>MATH_LEVELS[S.subject][levelIdx].gen());
+  renderMathQ();
+  const icon=S.subject==='addition'?'➕':'➖';
+  nav('scr-math-game',`${icon} Level ${levelIdx+1}`);
+  setTimeout(()=>document.getElementById('g-input').focus(),200);
+}
+
+function renderMathQ(){
+  const q=S.questions[S.idx];
+  document.getElementById('g-problem').textContent=`${q.a}  ${q.op}  ${q.b}  = ?`;
+  document.getElementById('g-input').value='';
+  document.getElementById('g-input').className='answer-input';
+  document.getElementById('g-msg').textContent='';
+  document.getElementById('g-msg').className='message';
+  document.getElementById('g-progress').textContent=`${S.idx+1}/10`;
+  document.getElementById('g-score').textContent=`⭐ ${S.score}`;
+  document.getElementById('g-bar').style.width=`${(S.idx/10)*100}%`;
+}
+
+function checkMath(){
+  const inp=document.getElementById('g-input');
+  const val=parseInt(inp.value,10);
+  if(inp.value===''||isNaN(val)){ inp.focus(); return; }
+
+  const q=S.questions[S.idx];
+  if(val===q.ans){
+    S.score++;
+    playSound('ok');
+    showFeedback(true,'');
+    setTimeout(()=>{ hideFeedback(); S.idx++; if(S.idx>=10) showScore(); else { renderMathQ(); inp.focus(); } },1400);
+  } else {
+    playSound('bad');
+    inp.className='answer-input shake';
+    showFeedback(false,`${q.a} ${q.op} ${q.b} = ${q.ans}`);
+    setTimeout(()=>{ hideFeedback(); S.idx++; if(S.idx>=10) showScore(); else { renderMathQ(); inp.focus(); } },1900);
+  }
+}
+
+document.getElementById('g-input').addEventListener('keydown',e=>{ if(e.key==='Enter') checkMath(); });
+
+/* ════════════════════════════════════════════════
+   WORD LEVELS
+════════════════════════════════════════════════ */
+function buildWordLevels(){
+  const grid=document.getElementById('word-levels-grid');
+  WORD_LEVELS.forEach((lvl,i)=>{
+    const d=document.createElement('div');
+    d.className=`level-card lc${i+1}`;
+    d.innerHTML=`<div class="lc-num">L${i+1}</div><div class="lc-desc">${lvl.label}</div>`;
+    d.onclick=()=>startWords(i);
+    grid.appendChild(d);
+  });
+}
+
+function startWords(levelIdx){
+  S.subject='words'; S.level=levelIdx; S.idx=0; S.score=0;
+  S.familyKey=null;
+  const pool=[...WORD_LEVELS[levelIdx].words];
+  shuffle(pool);
+  S.questions=pool.slice(0,10).map(w=>({w}));
+  renderWord();
+  nav('scr-word-view',`📖 Level ${levelIdx+1}`);
+}
+
+/* ════════════════════════════════════════════════
+   WORD FAMILIES
+════════════════════════════════════════════════ */
+function buildFamilyList(){
+  const card=document.getElementById('family-list-card');
+  card.innerHTML='';
+  Object.entries(WORD_FAMILIES).forEach(([cat,families])=>{
+    const h=document.createElement('div');
+    h.className='family-category'; h.textContent=cat;
+    card.appendChild(h);
+
+    const wrap=document.createElement('div');
+    wrap.className='family-chips';
+    Object.keys(families).forEach(fam=>{
+      const chip=document.createElement('div');
+      chip.className='family-chip';
+      chip.textContent=fam;
+      chip.onclick=()=>startFamily(cat,fam);
+      wrap.appendChild(chip);
+    });
+    card.appendChild(wrap);
+  });
+}
+
+function startFamily(cat, fam){
+  S.subject='family'; S.familyKey=fam; S.idx=0; S.score=0;
+  const allWords=WORD_FAMILIES[cat][fam];
+  // shuffle and take up to 10
+  const pool=[...allWords]; shuffle(pool);
+  S.questions=pool.slice(0,Math.min(10,pool.length)).map(w=>({w}));
+  renderWord();
+  nav('scr-word-view',`🔤 ${fam} family`);
+}
+
+/* ════════════════════════════════════════════════
+   WORD VIEW  (shared by levels + families)
+════════════════════════════════════════════════ */
+function renderWord(){
+  const item=S.questions[S.idx];
+  const total=S.questions.length;
+  const isFam=S.subject==='family';
+
+  // badge: show family name for family mode, hide for levels
+  const badge=document.getElementById('w-badge');
+  if(isFam){ badge.style.display='inline-block'; badge.textContent=S.familyKey+' family'; }
+  else { badge.style.display='none'; }
+
+  // letter boxes
+  const cont=document.getElementById('w-letters');
+  cont.innerHTML='';
+  [...item.w.toUpperCase()].forEach((ch,i)=>{
+    const b=document.createElement('div');
+    b.className='letter-box';
+    b.textContent=ch;
+    b.style.animationDelay=(i*.07)+'s';
+    cont.appendChild(b);
+  });
+
+  document.getElementById('w-counter').textContent=`Word ${S.idx+1} of ${total}`;
+  document.getElementById('w-label').textContent=
+    isFam ? `${item.w.length}-letter word` : WORD_LEVELS[S.level].hint;
+  document.getElementById('w-progress').textContent=`${S.idx+1}/${total}`;
+  document.getElementById('w-level-label').textContent=
+    isFam ? S.familyKey : `Level ${S.level+1}`;
+  document.getElementById('w-bar').style.width=`${(S.idx/total)*100}%`;
+  document.getElementById('btn-prev').disabled=(S.idx===0);
+
+  // change Next button label on last word
+  document.getElementById('btn-next').textContent=
+    (S.idx>=total-1) ? 'Done ✅' : 'Next ➡';
+}
+
+function wordNav(dir){
+  if(dir===1){
+    if(S.idx>=S.questions.length-1){ S.score=S.questions.length; showScore(); return; }
+    playSound('ok');
+    S.idx++;
+  } else if(dir===-1 && S.idx>0){
+    S.idx--;
+  }
+  renderWord();
+}
+
+function speakWord(){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(S.questions[S.idx].w);
+    u.rate=0.75; u.pitch=1.2;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   SCORE SCREEN
+════════════════════════════════════════════════ */
+function showScore(){
+  const pct=S.score/S.questions.length;
+  let stars='', msg='';
+  if(pct>=0.9){ stars='⭐⭐⭐'; msg='Outstanding! You are a superstar! 🌟'; }
+  else if(pct>=0.7){ stars='⭐⭐';  msg='Great work! Keep it up! 💪'; }
+  else if(pct>=0.5){ stars='⭐';    msg='Good try! Practice makes perfect! 🎯'; }
+  else            { stars='🌈';    msg='Keep practicing – you will get there! 🌈'; }
+
+  document.getElementById('sc-title').textContent='🏆 Done!';
+  document.getElementById('sc-stars').textContent=stars;
+  document.getElementById('sc-big').textContent=`${S.score}/${S.questions.length}`;
+  document.getElementById('sc-msg').textContent=msg;
+
+  // next level button
+  let hasNext=false;
+  if(S.subject==='words')  hasNext=!!(WORD_LEVELS[S.level+1]);
+  else if(S.subject==='addition'||S.subject==='subtraction')
+    hasNext=!!(MATH_LEVELS[S.subject][S.level+1]);
+  // family mode: no "next level"
+  document.getElementById('sc-next').style.display=hasNext?'block':'none';
+
+  playSound('levelDone');
+  spawnConfetti(40);
+  nav('scr-score','🏆 Score');
+}
+
+function goNextLevel(){
+  if(S.subject==='words') startWords(S.level+1);
+  else startMath(S.level+1);
+}
+function retryLevel(){
+  if(S.subject==='words')  startWords(S.level);
+  else if(S.subject==='family') {
+    // re-find cat for this family key
+    for(const [cat,fams] of Object.entries(WORD_FAMILIES)){
+      if(fams[S.familyKey]){ startFamily(cat,S.familyKey); return; }
+    }
+  }
+  else startMath(S.level);
+}
+
+/* ════════════════════════════════════════════════
+   FEEDBACK OVERLAY
+════════════════════════════════════════════════ */
+const OK_EMOJIS=['🎉','⭐','🌟','🏆','🥳','🎊','💫','✨'];
+const OK_MSGS  =['Hooray! 🎉','Amazing! 🌟','You Rock! 🚀','Brilliant! 💫','Superstar! ⭐','Fantastic! 🎊','Perfect! 🌈','Wonderful! 🥳'];
+const BAD_EMOJIS=['🤔','💪','😅','🌈'];
+
+function showFeedback(ok,extra=''){
+  const ov=document.getElementById('feedback-overlay');
+  ov.className='feedback-overlay show '+(ok?'ok':'bad');
+  if(ok){
+    document.getElementById('fb-emoji').textContent=OK_EMOJIS[ri(0,OK_EMOJIS.length-1)];
+    document.getElementById('fb-msg').textContent=OK_MSGS[ri(0,OK_MSGS.length-1)];
+    document.getElementById('fb-sub').textContent='';
+    spawnConfetti(18);
+  } else {
+    document.getElementById('fb-emoji').textContent=BAD_EMOJIS[ri(0,BAD_EMOJIS.length-1)];
+    document.getElementById('fb-msg').textContent='Oops! Not quite…';
+    document.getElementById('fb-sub').textContent=extra?`Answer: ${extra}`:'';
+  }
+}
+function hideFeedback(){
+  document.getElementById('feedback-overlay').className='feedback-overlay';
+}
+
+/* ════════════════════════════════════════════════
+   SOUND
+════════════════════════════════════════════════ */
+let _actx=null;
+function actx(){ return _actx||(_actx=new(window.AudioContext||window.webkitAudioContext)()); }
+function tone(freq,tStart,dur,type='sine',vol=0.3){
+  try{
+    const c=actx(),o=c.createOscillator(),g=c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.value=freq; o.type=type;
+    g.gain.setValueAtTime(vol,c.currentTime+tStart);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+tStart+dur);
+    o.start(c.currentTime+tStart); o.stop(c.currentTime+tStart+dur+.01);
+  }catch(e){}
+}
+function playSound(type){
+  try{
+    if(type==='ok'){
+      [[523,.00],[659,.12],[784,.24],[1047,.36]].forEach(([f,t])=>tone(f,t,.22));
+    } else if(type==='bad'){
+      tone(330,.00,.18,'sawtooth',.2); tone(247,.20,.30,'sawtooth',.18);
+    } else if(type==='levelDone'){
+      [[523,.00],[659,.10],[784,.20],[659,.30],[784,.42],[1047,.54],[1047,.70]]
+        .forEach(([f,t])=>tone(f,t,.16,'sine',.32));
+    }
+  }catch(e){}
+}
+
+/* ════════════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════════════ */
+const CONF=['#FF6B6B','#4ECDC4','#45B7D1','#FFA07A','#FFD700','#DDA0DD','#87CEEB','#98FF98'];
+function spawnConfetti(n=20){
+  const box=document.getElementById('celebration');
+  box.style.display='block';
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.cssText=`left:${Math.random()*100}vw;width:${8+Math.random()*10}px;height:${8+Math.random()*10}px;background:${CONF[Math.floor(Math.random()*CONF.length)]};animation-duration:${2+Math.random()*2.5}s;animation-delay:${Math.random()*.8}s;border-radius:${Math.random()>.5?'50%':'3px'};`;
+    box.appendChild(c);
+  }
+  setTimeout(()=>{ box.style.display='none'; box.innerHTML=''; },4000);
+}
+
+/* ════════════════════════════════════════════════
+   UTILS
+════════════════════════════════════════════════ */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+
+/* ════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+buildWordLevels();
+buildFamilyList();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+I want to create a small GitHub pages website for my 6 year old to practice simple math, and vocabulary
+1. It should have 2 digit additions listed and providing inputs and pressing okay it should give me hooray message and go to next calculation. 
+2. Similarly for subtraction
+3. For English I should see 3 letter words and 4 letter words and button to navigate to next and prev word. 
+4. Since this will be mobile friendly I want the webpages to be looking like app and big buttons and font so that my 6 year old will be comfortable to read it
+5. Nice interactive menu to switch above contexts
+6. The pages should be attractive so that a 6 year old will be happy to use it
+7. Finally I should be able to deploy this to GitHub and be able to access this on phone.
+8. http://splendidmoms.co.in/wp-content/uploads/2024/10/phonics-word-family.pdf read this for words
+9. We need to have levels for additions and substractions. Level1 for single digit, level 2 for 2 digit without carry, level 3 with carry and so on, same for substractions
+10. FOr words also we need levels. Read above pdf, and level 1 for 3 letter, level 2 for 4 letter and so on
+11. Also for success or failure add a sound
+12. Every level should have 10 words/problems. After completing of each level give a score of total before proceeding to next level
+13. I dont want pictures in the words, as it makes easy. Speaker is fine.
+14. Also add a word family, and refer the previous pdf I mentioned, and list all the word families, clicking which list one by one word from that family
