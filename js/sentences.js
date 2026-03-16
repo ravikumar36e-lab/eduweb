@@ -2,6 +2,7 @@
    SENTENCES
 ═══════════════════════════════════════════════ */
 function startSentences(){
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
   S.subject='sentences'; S.idx=0;
   const pool=shuffle([...SENTENCES]);
   S.questions=pool.slice(0,10);
