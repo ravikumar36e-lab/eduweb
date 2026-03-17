@@ -67,3 +67,27 @@ function wordNav(dir){
   renderWord();
 }
 function speakWord(){ say(S.questions[S.idx].w); }
+
+function speakCheck(){
+  const target = S.questions[S.idx].w.toLowerCase();
+  micBtnStart('wv-mic-btn');
+  startMic(
+    (alts) => {
+      micBtnReset('wv-mic-btn');
+      const clean = a => a.replace(/[^a-z]/g,'');
+      const match = alts.some(a => clean(a) === target || a === target);
+      if(match){
+        playSound('ok'); addPoints(5); spawnConfetti(8);
+        showMicResult('wv-mic-result', OK_MSGS[ri(0,OK_MSGS.length-1)], true);
+        setTimeout(()=>wordNav(1), 1000);
+      } else {
+        playSound('bad');
+        showMicResult('wv-mic-result', `🎤 I heard "${alts[0]}" — try again!`, false);
+      }
+    },
+    (err) => {
+      micBtnReset('wv-mic-btn');
+      if(err!=='aborted') showMicResult('wv-mic-result','🎤 Could not hear — try again!',false);
+    }
+  );
+}

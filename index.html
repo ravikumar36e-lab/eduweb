@@ -192,6 +192,8 @@
       <div class="word-counter" id="w-counter">Word 1 of 10</div>
       <div class="word-label" id="w-label"></div>
       <button class="btn-speak" onclick="speakWord()">🔊 Say it!</button>
+      <button class="btn-mic" id="wv-mic-btn" data-label="🎤 Read the word!" onclick="speakCheck()">🎤 Read the word!</button>
+      <div class="mic-result" id="wv-mic-result"></div>
       <div class="word-nav">
         <button class="btn-nav btn-prev" id="btn-prev" onclick="wordNav(-1)">⬅ Prev</button>
         <button class="btn-nav btn-next" id="btn-next" onclick="wordNav(1)">Next ➡</button>
@@ -211,6 +213,8 @@
       <div class="ml-word-display" id="ml-word-display"></div>
       <div class="message-area"><div class="message" id="ml-msg"></div></div>
       <div class="ml-vowels" id="ml-vowels"></div>
+      <button class="btn-mic" id="ml-mic-btn" data-label="🎤 Say the word!" onclick="missingMicCheck()" style="margin-top:14px">🎤 Say the word!</button>
+      <div class="mic-result" id="ml-mic-result"></div>
     </div>
   </div>
 
@@ -225,6 +229,8 @@
       <div class="sent-emojis" id="snt-emoji">🐱</div>
       <div class="sent-text" id="snt-text">The cat sits on the mat.</div>
       <button class="btn-speak" onclick="speakSentence()">🔊 Read it!</button>
+      <button class="btn-mic" id="snt-mic-btn" data-label="🎤 Try reading!" onclick="sentenceMicCheck()">🎤 Try reading!</button>
+      <div class="mic-result" id="snt-mic-result"></div>
       <div class="word-nav">
         <button class="btn-nav btn-prev" id="snt-prev" onclick="sentNav(-1)">⬅ Prev</button>
         <button class="btn-nav btn-next" id="snt-next" onclick="sentNav(1)">Next ➡</button>
@@ -263,6 +269,7 @@
 <script src="js/ordering.js"></script>
 <script src="js/skip.js"></script>
 <script src="js/clock.js"></script>
+<script src="js/mic.js"></script>
 <script src="js/words.js"></script>
 <script src="js/missing.js"></script>
 <script src="js/sentences.js?v=2"></script>
@@ -287,6 +294,7 @@
     document.getElementById('ws-welcome-text').textContent = `Welcome ${name}! 🎉`;
     const step2 = document.getElementById('ws-welcome-step');
     step2.style.display = 'flex';
+    say(`Welcome ${name}!`);
     _ws.addEventListener('click', _dismissWelcome);
     setTimeout(_dismissWelcome, 2200);
   }
@@ -297,6 +305,7 @@
     document.getElementById('ws-name-step').style.display = 'none';
     document.getElementById('ws-welcome-text').textContent = `Welcome ${_savedName}! 🎉`;
     document.getElementById('ws-welcome-step').style.display = 'flex';
+    say(`Welcome ${_savedName}!`);
     _ws.addEventListener('click', _dismissWelcome);
     setTimeout(_dismissWelcome, 2800);
   }

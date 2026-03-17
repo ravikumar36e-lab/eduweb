@@ -34,6 +34,33 @@ function renderMissing(){
     vow.appendChild(b);
   });
 }
+function missingMicCheck(){
+  const q = S.questions[S.idx];
+  micBtnStart('ml-mic-btn');
+  startMic(
+    (alts) => {
+      micBtnReset('ml-mic-btn');
+      const clean = a => a.replace(/[^a-z]/g,'');
+      // If any alternative is the full word, use the correct vowel directly
+      if(alts.some(a => clean(a) === q.w)){
+        checkMissing(q.w[1]);
+      } else {
+        // Try to extract vowel from same-length heard word
+        const heard = clean(alts[0]);
+        if(heard.length === q.w.length){
+          checkMissing(heard[1]);
+        } else {
+          showMicResult('ml-mic-result', `🎤 I heard "${alts[0]}" — try again!`, false);
+        }
+      }
+    },
+    (err) => {
+      micBtnReset('ml-mic-btn');
+      if(err!=='aborted') showMicResult('ml-mic-result','🎤 Could not hear — try again!',false);
+    }
+  );
+}
+
 function checkMissing(v){
   const q=S.questions[S.idx];
   const correct=q.w[1];

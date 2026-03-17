@@ -26,3 +26,31 @@ function sentNav(dir){
   renderSentence();
 }
 function speakSentence(){ say(S.questions[S.idx].t); }
+
+function sentenceMicCheck(){
+  const target = S.questions[S.idx].t.toLowerCase().replace(/[^a-z\s]/g,'');
+  const targetWords = target.split(/\s+/).filter(w=>w.length>2);
+  micBtnStart('snt-mic-btn');
+  startMic(
+    (alts) => {
+      micBtnReset('snt-mic-btn');
+      let best = 0;
+      for(const alt of alts){
+        const heardWords = alt.toLowerCase().replace(/[^a-z\s]/g,'').split(/\s+/);
+        const score = targetWords.filter(w=>heardWords.includes(w)).length / targetWords.length;
+        if(score > best) best = score;
+      }
+      if(best >= 0.55){
+        playSound('ok'); addPoints(5); spawnConfetti(8);
+        showMicResult('snt-mic-result','✅ Great reading! 🌟', true);
+      } else {
+        playSound('bad');
+        showMicResult('snt-mic-result', `🎤 I heard: "${alts[0]}"`, false);
+      }
+    },
+    (err) => {
+      micBtnReset('snt-mic-btn');
+      if(err!=='aborted') showMicResult('snt-mic-result','🎤 Could not hear — try again!',false);
+    }
+  );
+}
