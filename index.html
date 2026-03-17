@@ -7,20 +7,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
 <body>
 
 <!-- WELCOME SCREEN -->
 <div id="welcome-screen">
-  <div class="welcome-star">🌟</div>
-  <div class="welcome-text">Welcome Mihaan!</div>
-  <div class="welcome-sub">Tap to start ✨</div>
+  <!-- Step 1: name input (first visit) -->
+  <div id="ws-name-step">
+    <div class="welcome-star">🌟</div>
+    <div class="ws-prompt">Hi there! What's your name?</div>
+    <input id="ws-name-input" class="ws-name-input" type="text" placeholder="Type your name…" maxlength="20" autocomplete="off" />
+    <button class="ws-go-btn" onclick="wsSetName()">Let's Go! 🚀</button>
+  </div>
+  <!-- Step 2: welcome flash (after name set or returning visitor) -->
+  <div id="ws-welcome-step" style="display:none">
+    <div class="welcome-star">🌟</div>
+    <div class="welcome-text" id="ws-welcome-text">Welcome!</div>
+    <div class="welcome-sub">Tap to start ✨</div>
+  </div>
 </div>
 
 <header>
   <button id="back-btn" onclick="goBack()">← Back</button>
   <h1 id="page-title">🌟 Learn &amp; Play 🌟</h1>
+  <button id="home-btn" onclick="goHome()" style="display:none">🏠</button>
   <div id="points-badge">⭐ 0 pts</div>
 </header>
 
@@ -36,6 +48,7 @@
         <div class="mc-icon">📖</div><div class="mc-label">English</div>
       </div>
     </div>
+    <button class="btn-reset-pts" onclick="resetPoints()">🔄 Reset Points</button>
   </div>
 
   <!-- MATH MENU -->
@@ -138,8 +151,8 @@
   <!-- WORDS MENU -->
   <div class="screen" id="scr-words-menu">
     <div class="menu-grid">
-      <div class="menu-card mc-lvl" onclick="nav('scr-word-levels','📖 Words by Level')">
-        <div class="mc-icon">📚</div><div class="mc-label">By Level</div>
+      <div class="menu-card mc-lvl" onclick="nav('scr-word-levels','📚 Spell Words')">
+        <div class="mc-icon">📚</div><div class="mc-label">Spell Words</div>
       </div>
       <div class="menu-card mc-fam" onclick="nav('scr-family-list','🔤 Word Families')">
         <div class="mc-icon">🔤</div><div class="mc-label">Word Families</div>
@@ -240,6 +253,7 @@
   <div class="fb-sub" id="fb-sub"></div>
 </div>
 <div id="celebration"></div>
+<div id="boost-toast"></div>
 
 <script src="js/data.js"></script>
 <script src="js/utils.js"></script>
@@ -260,11 +274,32 @@
   // Welcome screen
   const _ws = document.getElementById('welcome-screen');
   function _dismissWelcome() {
+    if (_ws.style.display === 'none') return;
     _ws.classList.add('fade-out');
     setTimeout(() => { _ws.style.display = 'none'; }, 600);
   }
-  _ws.addEventListener('click', _dismissWelcome);
-  setTimeout(_dismissWelcome, 2800);
+  function wsSetName() {
+    const inp = document.getElementById('ws-name-input');
+    const name = inp.value.trim();
+    if (!name) { inp.focus(); return; }
+    localStorage.setItem('lp_name', name);
+    document.getElementById('ws-name-step').style.display = 'none';
+    document.getElementById('ws-welcome-text').textContent = `Welcome ${name}! 🎉`;
+    const step2 = document.getElementById('ws-welcome-step');
+    step2.style.display = 'flex';
+    _ws.addEventListener('click', _dismissWelcome);
+    setTimeout(_dismissWelcome, 2200);
+  }
+  document.getElementById('ws-name-input').addEventListener('keydown', e => { if (e.key === 'Enter') wsSetName(); });
+
+  const _savedName = localStorage.getItem('lp_name');
+  if (_savedName) {
+    document.getElementById('ws-name-step').style.display = 'none';
+    document.getElementById('ws-welcome-text').textContent = `Welcome ${_savedName}! 🎉`;
+    document.getElementById('ws-welcome-step').style.display = 'flex';
+    _ws.addEventListener('click', _dismissWelcome);
+    setTimeout(_dismissWelcome, 2800);
+  }
 </script>
 </body>
 </html>

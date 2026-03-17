@@ -35,17 +35,41 @@ function playSound(type){
    POINTS
 ═══════════════════════════════════════════════ */
 let totalPoints = JSON.parse(localStorage.getItem('lp_points')) || 0;
+let _correctCount = 0;
+const BOOST_MSGS = ['Awesome','Splendid','Wonderful','Brilliant','Fantastic','Amazing','Outstanding','Superb'];
+
 function updatePointsDisplay(){
   document.getElementById('points-badge').textContent = `⭐ ${totalPoints} pts`;
 }
 function addPoints(n){
   totalPoints += n;
+  _correctCount++;
   localStorage.setItem('lp_points', JSON.stringify(totalPoints));
   const badge = document.getElementById('points-badge');
   badge.textContent = `⭐ ${totalPoints} pts`;
   badge.classList.remove('pop');
   void badge.offsetWidth;
   badge.classList.add('pop');
+  // Boost every 3 correct answers
+  if (_correctCount % 3 === 0) {
+    const name = localStorage.getItem('lp_name') || 'Superstar';
+    const msg = BOOST_MSGS[ri(0, BOOST_MSGS.length - 1)];
+    showBoost(`${msg}, ${name}! 🌟`);
+  }
+}
+function showBoost(text){
+  const el = document.getElementById('boost-toast');
+  el.textContent = text;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+function resetPoints(){
+  if (!confirm('Reset all points to 0?')) return;
+  totalPoints = 0; _correctCount = 0;
+  localStorage.setItem('lp_points', '0');
+  updatePointsDisplay();
 }
 
 /* ═══════════════════════════════════════════════
