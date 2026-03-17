@@ -213,9 +213,11 @@ const SKIP_LEVELS=[
 ];
 
 const CLK_LEVELS=[
-  {desc:'Whole hours\n:00 only',   minutes:[0]},
-  {desc:'Half hours\n:00 and :30', minutes:[0,30]},
-  {desc:'Quarter hours\n:00 :15 :30 :45', minutes:[0,15,30,45]}
+  {desc:'Whole hours\n:00 only',            minutes:[0]},
+  {desc:'Half hours\n:00 and :30',          minutes:[0,30]},
+  {desc:'Quarter hours\n:00 :15 :30 :45',   minutes:[0,15,30,45]},
+  {desc:'5-minute\nsteps',                  minutes:[0,5,10,15,20,25,30,35,40,45,50,55]},
+  {desc:'Any time\nchallenge!',             minutes:null}
 ];
 
 /* ═══════════════════════════════════════════════

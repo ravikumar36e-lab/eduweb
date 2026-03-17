@@ -22,9 +22,13 @@ function startClock(levelIdx){
   newClockQ();
 }
 function fmtTime(h,m){ return `${h}:${m.toString().padStart(2,'0')}`; }
+function _randMin(lvl){
+  if(lvl.minutes) return lvl.minutes[ri(0,lvl.minutes.length-1)];
+  return ri(0,11)*5; // L5: any 5-min step, 0-55
+}
 function newClockQ(){
-  const mins=CLK_LEVELS[S.level].minutes;
-  const h=ri(1,12), m=mins[ri(0,mins.length-1)];
+  const lvl=CLK_LEVELS[S.level];
+  const h=ri(1,12), m=_randMin(lvl);
   clkCorrectTime=fmtTime(h,m);
   drawClock(h,m);
 
@@ -34,10 +38,9 @@ function newClockQ(){
   document.getElementById('clk-msg').textContent='';
   document.getElementById('clk-msg').className='message';
 
-  const allMins=CLK_LEVELS[S.level].minutes;
   const wrongs=new Set();
   while(wrongs.size<3){
-    const wh=ri(1,12),wm=allMins[ri(0,allMins.length-1)];
+    const wh=ri(1,12), wm=_randMin(lvl);
     const ws=fmtTime(wh,wm);
     if(ws!==clkCorrectTime) wrongs.add(ws);
   }

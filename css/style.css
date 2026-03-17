@@ -128,7 +128,11 @@ header h1{ color:white; font-size:clamp(1.3em,5vw,2em); font-weight:800; text-sh
 .progress-label{ color:white; font-weight:800; font-size:.95em; white-space:nowrap; }
 
 /* ── MATH GAME ── */
-.problem{ font-size:clamp(2.8em,11vw,4.5em); font-weight:800; color:#333; margin-bottom:14px; line-height:1.25; }
+.problem{ display:flex; flex-direction:column; align-items:flex-end; margin-bottom:14px; }
+.v-row{ display:flex; align-items:center; justify-content:flex-end; }
+.v-op-cell{ font-size:clamp(2.4em,9vw,3.8em); font-weight:800; color:#667eea; min-width:1em; text-align:left; padding-right:6px; }
+.v-num-cell{ font-size:clamp(2.4em,9vw,3.8em); font-weight:800; color:#333; text-align:right; min-width:2.6em; }
+.v-divider{ border-top:5px solid #444; width:100%; margin:6px 0 2px; }
 .message-area{ min-height:52px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
 .message{ font-size:clamp(1.3em,5vw,1.9em); font-weight:800; }
 .message.correct{ color:#2ecc71; animation:pop .4s ease; }

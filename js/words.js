@@ -44,7 +44,11 @@ function startFamily(cat,fam){
 /* ═══════════════════════════════════════════════
    WORD VIEW
 ═══════════════════════════════════════════════ */
+let _wvWrongMic=0;
+
 function renderWord(){
+  _wvWrongMic=0;
+  document.getElementById('wv-speak-btn').style.display='none';
   const item=S.questions[S.idx], total=S.questions.length, isFam=S.subject==='family';
   const badge=document.getElementById('w-badge');
   if(isFam){badge.style.display='inline-block';badge.textContent=S.familyKey+' family';}
@@ -82,12 +86,18 @@ function speakCheck(){
         setTimeout(()=>wordNav(1), 1000);
       } else {
         playSound('bad');
+        _wvWrongMic++;
         showMicResult('wv-mic-result', `🎤 I heard "${alts[0]}" — try again!`, false);
+        if(_wvWrongMic>=2) document.getElementById('wv-speak-btn').style.display='block';
       }
     },
     (err) => {
       micBtnReset('wv-mic-btn');
-      if(err!=='aborted') showMicResult('wv-mic-result','🎤 Could not hear — try again!',false);
+      if(err!=='aborted'){
+        _wvWrongMic++;
+        showMicResult('wv-mic-result','🎤 Could not hear — try again!',false);
+        if(_wvWrongMic>=2) document.getElementById('wv-speak-btn').style.display='block';
+      }
     }
   );
 }

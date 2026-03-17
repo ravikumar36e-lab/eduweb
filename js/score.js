@@ -18,7 +18,7 @@ function showScore(){
   else if(S.subject==='addition'||S.subject==='subtraction') hasNext=!!MATH_LEVELS[S.subject][S.level+1];
   else if(S.subject==='ordering') hasNext=S.level<2;
   else if(S.subject==='skip') hasNext=S.level<4;
-  else if(S.subject==='clock') hasNext=S.level<2;
+  else if(S.subject==='clock') hasNext=S.level<4;
   document.getElementById('sc-next').style.display=hasNext?'block':'none';
   playSound('levelDone'); spawnConfetti(40);
   nav('scr-score','🏆 Score');

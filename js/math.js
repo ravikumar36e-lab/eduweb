@@ -27,7 +27,10 @@ function startMath(levelIdx){
 }
 function renderMathQ(){
   const q=S.questions[S.idx];
-  document.getElementById('g-problem').textContent=`${q.a}  ${q.op}  ${q.b}  = ?`;
+  document.getElementById('g-problem').innerHTML=`
+    <div class="v-row"><span class="v-op-cell"></span><span class="v-num-cell">${q.a}</span></div>
+    <div class="v-row"><span class="v-op-cell">${q.op}</span><span class="v-num-cell">${q.b}</span></div>
+    <div class="v-divider"></div>`;
   document.getElementById('g-input').value='';
   document.getElementById('g-input').className='answer-input';
   document.getElementById('g-msg').textContent='';
